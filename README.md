@@ -1,0 +1,2 @@
+# astrbot_plugin_steam_topsellers
+这是一个可以让astrbot运行的steam每日热销榜的查询插件
