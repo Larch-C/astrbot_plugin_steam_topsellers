@@ -2,3 +2,4 @@ name: steam_topsellers # 插件的唯一识别名
 desc: 获取Steam热销榜前5名游戏 # 插件简短描述
 version: v1.1.0 # 插件版本号
 author: danfong1104 # 作者
+repo: https://github.com/danfong1104/astrbot_plugin_steam_topsellers
