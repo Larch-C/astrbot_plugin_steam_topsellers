@@ -1,0 +1,28 @@
+{
+  "remind_time": { 
+      "description": "提醒时间（24小时制）", 
+      "type": "string",
+      "hint": "字符串（24小时制，例如：18:00），若留空则不设置定时任务", 
+      "default": "08:00"
+  },  
+  "default_top_num":{
+      "description": "默认输出的榜单游戏数量",
+      "type": "int",
+      "default": 5,
+      "hint": "整数"
+  },
+  "manully_added_groups":{
+      "description": "手动添加订阅的qq群组",
+      "type": "list",
+      "default": [],
+      "item_type": "string",
+      "hint": "列表（群号）"
+  },
+  "manully_added_senders":{
+      "description": "手动添加订阅的qq号",
+      "type": "list",
+      "default": [],
+      "item_type": "string",
+      "hint": "列表（qq号）"
+  }
+} 
