@@ -7,9 +7,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # 导入 AstrBot 核心 API
 from astrbot.api import logger
-from astrbot.api.event import filter, AstrMessageEvent, MessageChain
+from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register, StarTools
-import astrbot.api.message_components as Comp
 from astrbot.core.config.astrbot_config import AstrBotConfig
 
 
@@ -29,8 +28,8 @@ class SteamTopSellers(Star):
         super().__init__(context)
         self.config = config
         self.remind_time = self.config.get("remind_time", "08:00")
-        self.manully_added_groups = self.config.get("manully_added_groups", [])
-        self.manully_added_senders = self.config.get("manully_added_senders", [])
+        self.manually_added_groups = self.config.get("manually_added_groups", [])
+        self.manually_added_senders = self.config.get("manually_added_senders", [])
         self.default_top_num = self.config.get("default_top_num", 5)
         self.data_dir = Path(StarTools.get_data_dir("astrbot_plugin_steam_topsellers"))
         self.SUBSCRIPTIONS_FILE = Path(
@@ -50,13 +49,13 @@ class SteamTopSellers(Star):
                 with open(self.SUBSCRIPTIONS_FILE, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     self._subscribed_groups = set(data.get("subscribed_groups", []))
-                if self.manully_added_groups:
-                    for group_id in self.manully_added_groups:
+                if self.manually_added_groups:
+                    for group_id in self.manually_added_groups:
                         self._subscribed_groups.add(
                             f"aiocqhttp:GroupMessage:{group_id}"
                         )
-                if self.manully_added_senders:
-                    for sender_id in self.manully_added_senders:
+                if self.manually_added_senders:
+                    for sender_id in self.manually_added_senders:
                         self._subscribed_groups.add(
                             f"aiocqhttp:FriendMessage:{sender_id}"
                         )
@@ -124,7 +123,6 @@ class SteamTopSellers(Star):
             if not report_text:
                 logger.warning("未能成功生成日报内容。")
                 return
-            report_text = MessageChain([Comp.Plain(report_text)])
             for group_id in self._subscribed_groups:
                 await self.context.send_message(
                     group_id,
@@ -132,8 +130,15 @@ class SteamTopSellers(Star):
                 )
                 logger.info(f"已向群组 {group_id} 发送日报。")
 
+        except aiohttp.ClientError as e:
+            logger.error(f"请求 Steam API 时发生网络错误: {e}")
+            return None
+        except json.JSONDecodeError as e:
+            logger.error(f"解析 Steam API 响应失败: {e}")
+            return None
         except Exception as e:
-            logger.error(f"发送日报时发生错误: {e}", exc_info=True)
+            logger.error(f"生成日报文本时发生未知错误: {e}", exc_info=True)
+            return None
 
     async def _generate_report_text(self, num: int = None):
         """异步获取数据并生成热销榜文本"""

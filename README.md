@@ -37,9 +37,9 @@
 
 - `default_top_num`: 默认输出热销榜的条目数量，默认为 `5`。
 
-- `manully_added_groups`: 手动添加的群组列表。
+- `manually_added_groups`: 手动添加的群组列表。
 
-- `manully_added_senders`: 手动添加的私聊会话列表。
+- `manually_added_senders`: 手动添加的私聊会话列表。
 
 ## 依赖
 

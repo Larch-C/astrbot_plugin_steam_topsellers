@@ -11,14 +11,14 @@
       "default": 5,
       "hint": "整数"
   },
-  "manully_added_groups":{
+  "manually_added_groups":{
       "description": "手动添加订阅的qq群组",
       "type": "list",
       "default": [],
       "item_type": "string",
       "hint": "列表（群号）"
   },
-  "manully_added_senders":{
+  "manually_added_senders":{
       "description": "手动添加订阅的qq号",
       "type": "list",
       "default": [],
