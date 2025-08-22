@@ -37,6 +37,7 @@ class SteamTopSellers(Star):
         )
         self.scheduler = None
         self._subscribed_groups = set()
+        self._manually_subscribed_groups = set()
         self._load_subscribed_groups()
         if self.remind_time:
             self._start_scheduler()
@@ -51,16 +52,17 @@ class SteamTopSellers(Star):
                     self._subscribed_groups = set(data.get("subscribed_groups", []))
                 if self.manually_added_groups:
                     for group_id in self.manually_added_groups:
-                        self._subscribed_groups.add(
+                        self._manually_subscribed_groups.add(
                             f"aiocqhttp:GroupMessage:{group_id}"
                         )
                 if self.manually_added_senders:
                     for sender_id in self.manually_added_senders:
-                        self._subscribed_groups.add(
+                        self._manually_subscribed_groups.add(
                             f"aiocqhttp:FriendMessage:{sender_id}"
                         )
-                self._save_subscribed_groups()
-                logger.info(f"已加载 {len(self._subscribed_groups)} 个订阅群组。")
+                logger.info(
+                    f"已加载 {len(self._subscribed_groups) + len(self._manually_subscribed_groups)} 个订阅群组，其中手动添加的 {len(self._manually_subscribed_groups)} 个。"
+                )
             except (IOError, json.JSONDecodeError) as e:
                 logger.error(f"加载订阅群组文件失败: {e}")
         else:
@@ -112,7 +114,10 @@ class SteamTopSellers(Star):
 
     # 每日播报任务的核心逻辑
     async def _send_daily_report(self):
-        if not self._subscribed_groups:
+        need_to_send_set = self._subscribed_groups.union(
+            self._manually_subscribed_groups
+        )
+        if not need_to_send_set:
             logger.info("没有已订阅的群组，跳过日报播报。")
             return
 
@@ -122,8 +127,7 @@ class SteamTopSellers(Star):
             logger.info(f"report_text: {report_text}")
             if not report_text:
                 logger.warning("未能成功生成日报内容。")
-                return
-            for group_id in self._subscribed_groups:
+            for group_id in need_to_send_set:
                 await self.context.send_message(
                     group_id,
                     report_text,
@@ -276,6 +280,14 @@ class SteamTopSellers(Star):
             platform_count += 1
 
         yield event.plain_result(reply_text.strip())
+
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("删除所有配置外的添加steam日报订阅")
+    async def clear_daily_report_groups(self, event: AstrMessageEvent, args: str = ""):
+        """清空全局订阅列表（管理员权限）"""
+        self._subscribed_groups.clear()
+        self._save_subscribed_groups()
+        yield event.plain_result("已清空所有非手动添加订阅。")
 
     @staticmethod
     def _parse_unified_origin(origin: str):
