@@ -17,7 +17,7 @@ import astrbot.api.message_components as Comp
     "astrbot_plugin_steam_topsellers",
     "bushikq&danfong1104",
     "一个获取Steam热销榜排名,支持定时发送的astrbot插件。",
-    "2.0.0",
+    "2.0.1",
 )
 class SteamTopSellers(Star):
     """

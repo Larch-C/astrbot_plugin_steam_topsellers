@@ -1,5 +1,5 @@
 name: astrbot_plugin_steam_topsellers
 desc: 一个获取Steam热销榜排名,支持定时发送的astrbot插件。
-version: v2.0.0
+version: v2.0.1
 author: bushikq&danfong1104
 repo: https://github.com/danfong1104/astrbot_plugin_steam_topsellers
