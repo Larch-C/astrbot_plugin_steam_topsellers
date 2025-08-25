@@ -7,9 +7,10 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 # 导入 AstrBot 核心 API
 from astrbot.api import logger
-from astrbot.api.event import filter, AstrMessageEvent
+from astrbot.api.event import filter, AstrMessageEvent, MessageChain
 from astrbot.api.star import Context, Star, register, StarTools
 from astrbot.core.config.astrbot_config import AstrBotConfig
+import astrbot.api.message_components as Comp
 
 
 @register(
@@ -125,6 +126,7 @@ class SteamTopSellers(Star):
         try:
             report_text = await self._generate_report_text()
             logger.info(f"report_text: {report_text}")
+            report_text = MessageChain([Comp.Plain(report_text)])
             if not report_text:
                 logger.warning("未能成功生成日报内容。")
             for group_id in need_to_send_set:
