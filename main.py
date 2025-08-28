@@ -170,11 +170,15 @@ class SteamTopSellers(Star):
                     data = await response.json()
                     html_content = data.get("results_html")
                     if not html_content:
+                        logger.error("Steam API 响应中未找到 results_html 字段。")
+                        logger.error(f"响应内容: {data}")
                         return None
 
                 soup = BeautifulSoup(html_content, "html.parser")
                 top_sellers = soup.select("a.search_result_row")
                 if not top_sellers:
+                    logger.error("Steam API 响应中未找到热销榜数据。")
+                    logger.error(f"soup: {soup}")
                     return None
 
                 reply_text = f"Steam 实时热销榜 Top {num} 🐲\n" + ("-" * 20)
