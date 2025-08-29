@@ -17,7 +17,7 @@ import astrbot.api.message_components as Comp
     "astrbot_plugin_steam_topsellers",
     "bushikq&danfong1104",
     "一个获取Steam热销榜排名,支持定时发送的astrbot插件。",
-    "2.0.1",
+    "2.0.2",
 )
 class SteamTopSellers(Star):
     """
@@ -207,8 +207,10 @@ class SteamTopSellers(Star):
 
     @filter.command("steam热销", alias={"steam热销榜", "steam热销排行"})
     async def get_steam_top_sellers(self, event: AstrMessageEvent, args: str = ""):
-        """输出 Steam 实时热销榜排名。空格后加数量参数可指定输出数量，默认为 5。"""
-        report_text = await self._generate_report_text(num=int(args) if args else 5)
+        """输出 Steam 实时热销榜排名。空格后加数量参数可指定输出数量，默认为 self.default_top_num。"""
+        report_text = await self._generate_report_text(
+            num=int(args) if args else self.default_top_num
+        )
         if report_text:
             yield event.plain_result(report_text)
         else:
